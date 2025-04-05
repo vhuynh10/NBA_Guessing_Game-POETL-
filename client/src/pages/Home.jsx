@@ -1,10 +1,16 @@
 import { useState, useEffect } from "react";
 import axios from "axios"; 
+import MainGame from "../components/MainGame";
 
 function Home() {
   const [email, setEmail] = useState(null); 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null); 
+  const[showGame, setShowGame] = useState(false);
+
+  function handleShowGame() {
+    setShowGame(!showGame);
+  }
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -39,10 +45,18 @@ function Home() {
   }
 
   return (
-    <div>
-      <h1>Welcome {email ? `${email}` : "to the Home Page"}</h1>
+    <section className="flex flex-col items-center w-full font-[lexend] bg-[#fdfbd4] h-screen overflow-hidden ">
+      <div>
+      <h1 className="py-20">Welcome {email ? `${email}` : "to the Home Page"}</h1>
       {error && <p style={{ color: "red" }}>{error}</p>} {/* Display error message if any */}
-    </div>
+      </div>
+
+      <div>
+        {!showGame && (<button onClick={handleShowGame} className="font-[bungee] border border-rounded text-5xl hover rounded-md p-2 border-[4px] text-white border-[#1d428a] bg-[#1d428a] cursor-pointer blueShadow blueShadow:hover"> Play Now!</button>)}
+        {showGame && (<MainGame/>)}
+      </div>
+      
+    </section>
   );
 }
 
