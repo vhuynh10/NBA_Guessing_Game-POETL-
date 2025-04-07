@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import authRoutes from '../routes/authRoutes.js';
+import scrapeNBAData from '../scraper/newScraper.js';
 
 dotenv.config();
 
@@ -19,6 +20,7 @@ app.use(express.json());
 
 // Import routes
 app.use('/api/auth', authRoutes);
+//scrapeNBAData();
 
 app.listen(PORT, () => {    
     console.log(`Server is running on port ${PORT}`);
