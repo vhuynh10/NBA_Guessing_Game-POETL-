@@ -38,24 +38,28 @@ const Register = () => {
   };
 
   return (
-    <div>
+    <div className="generic-cream-bg">
       <h2>Register</h2>
-      <form onSubmit={handleSubmit}>
+      <form className="space-y-4" onSubmit={handleSubmit}>
+        <label htmlFor="username">Email:</label>
         <input
+          className="border border-2px bg-white flex flex-row"
           type="text"
           name="username"
           placeholder="Email"
           onChange={handleChange}
           required
         />
+        <label htmlFor="password">Password:</label>
         <input
+          className="border border-2px bg-white flex flex-row"
           type="password"
           name="password"
           placeholder="Password"
           onChange={handleChange}
           required
         />
-        <button type="submit">Register</button>
+        <button type="submit" className="border border-2px bg-white flex flex-row cursor-pointer">Register</button>
       </form>
       {error && <p style={{ color: "red" }}>{error}</p>}
       {success && <p style={{ color: "green" }}>{success}</p>}
