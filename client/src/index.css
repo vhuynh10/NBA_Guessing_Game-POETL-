@@ -1,0 +1,27 @@
+@import "tailwindcss";
+
+html, body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #fdfbd4;
+  }
+
+.blueShadow {
+  box-shadow: 3px 3px 0 0 #60a5fa;
+  
+}.blueShadow:hover {
+  transform: translate(-3px, -3px);
+  box-shadow: 6px 6px 0 0 #60a5fa;
+}
+
+.generic-cream-bg {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  font-family: 'Lexend', sans-serif;
+  background-color: #fdfbd4;
+  height: 100vh;
+}
+  

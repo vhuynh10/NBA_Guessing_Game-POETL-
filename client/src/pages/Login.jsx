@@ -37,24 +37,28 @@ const Login = () => {
   };
 
   return (
-    <div>
+    <div className="generic-cream-bg">
       <h2>Login</h2>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <label htmlFor="username">Email:</label>
         <input
+          className="border border-2px bg-white flex flex-row "
           type="text"
           name="username"
           placeholder="Email"
           onChange={handleChange}
           required
         />
+        <label htmlFor="password">Password:</label>
         <input
+          className="border border-2px bg-white flex flex-row"
           type="password"
           name="password"
           placeholder="Password"
           onChange={handleChange}
           required
         />
-        <button type="submit">Login Here</button>
+        <button type="submit" className="border border-2px bg-white flex flex-row cursor-pointer">Login Here</button>
       </form>
       {error && <p style={{ color: "red" }}>{error}</p>}
     </div>
