@@ -1,0 +1,16 @@
+###
+GET http://localhost:5002/api/gameRoutes/startGame
+Content-Type: application/json
+
+###
+GET http://localhost:5002/api/gameRoutes/getPlayers
+Content-Type: application/json
+
+###
+POST http://localhost:5002/api/gameRoutes/guess
+Content-Type: application/json
+
+{
+  "player_name": "Stephen Curry",
+  "game_id": 1
+}
