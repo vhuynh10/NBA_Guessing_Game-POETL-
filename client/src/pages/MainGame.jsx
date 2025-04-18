@@ -1,7 +1,39 @@
-import React from 'react'
+import React, { use, useEffect, useState } from 'react'
 import GuessHolder from '../components/GuessHolder'
+import TeamCard from '../components/TeamCard';
+import axios from 'axios';
 
 export default function MainGame() {
+  const [groupedPlayers, setGroupedPlayers] = useState({}); // State to store the fetched data
+  const [loading, setLoading] = useState(true); // State to handle loading
+  const [error, setError] = useState(null); // State to handle errors
+
+  useEffect(() => {
+    const fetchPlayers = async () => {
+      try {
+        const response = await axios.get("http://localhost:5002/api/gameRoutes/getPlayers");
+        setGroupedPlayers(response.data); // Store the fetched data
+        setLoading(false);
+      } catch (err) {
+        console.error("Error fetching players:", err.message);
+        setError("Failed to fetch players. Please try again later.");
+        setLoading(false);
+      }
+    };
+
+    fetchPlayers();
+  }, []);
+
+  if (loading) {
+    return <div>Loading...</div>; // Show a loading message while fetching data
+  }
+
+  if (error) {
+    return <div style={{ color: 'red' }}>{error}</div>; // Show an error message if fetching fails
+  }
+    
+
+
   return (
     <div className="generic-cream-bg flex flex-row space-y-4 mt-4">
        <h2 className="text-slate-500">Enter your Guess...</h2>
@@ -11,6 +43,12 @@ export default function MainGame() {
        </div>
        <div>
           <GuessHolder/>
+          <div className="grid grid-cols-4 gap-4">
+          {Object.keys(groupedPlayers).map((teamName) => (
+            <TeamCard key={teamName} teamName={teamName} players={groupedPlayers[teamName]} />
+            ))}
+          </div>
+          
        </div>
     </div>
   )
