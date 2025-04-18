@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import authRoutes from '../routes/authRoutes.js';
 import scrapeNBAData from '../scraper/newScraper.js';
+import gameRoutes from '../routes/gameRoutes.js';
 
 dotenv.config();
 
@@ -20,6 +21,7 @@ app.use(express.json());
 
 // Import routes
 app.use('/api/auth', authRoutes);
+app.use('/api/gameRoutes', gameRoutes);
 //scrapeNBAData();
 
 app.listen(PORT, () => {    
