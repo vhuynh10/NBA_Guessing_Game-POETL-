@@ -11,6 +11,6 @@ POST http://localhost:5002/api/gameRoutes/guess
 Content-Type: application/json
 
 {
-  "player_name": "Stephen Curry",
-  "game_id": 1
+  "playerName": "Stephen Curry",
+  "gameId": 22
 }
