@@ -1,4 +1,4 @@
-import React, { use, useEffect, useState } from 'react'
+import React, {useEffect, useState } from 'react'
 import GuessHolder from '../components/GuessHolder'
 import TeamCard from '../components/TeamCard';
 import axios from 'axios';
@@ -7,22 +7,41 @@ export default function MainGame() {
   const [groupedPlayers, setGroupedPlayers] = useState({}); // State to store the fetched data
   const [loading, setLoading] = useState(true); // State to handle loading
   const [error, setError] = useState(null); // State to handle errors
-  const [guess, setGuess] = useState("");
-
-  useEffect(() => {
-    const fetchPlayers = async () => {
+  const [guess, setGuess] = useState(""); // State for the guess input
+  const [guessResult, setGuessResult] = useState(null); // State to store the result of the guess
+  const [gameId, setGameId] = useState(null); // State to store the current game ID
+  const [playerSet, setPlayerSet] = useState(new Set()); // contains all player names
+  
+   // Fetch players and start the game
+   useEffect(() => {
+    const initializeGame = async () => {
       try {
-        const response = await axios.get("http://localhost:5002/api/gameRoutes/getPlayers");
-        setGroupedPlayers(response.data); // Store the fetched data
+        // Fetch players
+        const playersResponse = await axios.get("http://localhost:5002/api/gameRoutes/getPlayers");
+        setGroupedPlayers(playersResponse.data);
+
+        // Convert players to a Set for quick lookup
+        
+        const newPlayerSet = new Set();
+        Object.values(playersResponse.data).forEach((teamPlayers) => {
+          teamPlayers.forEach((player) => newPlayerSet.add(player.name.toLowerCase()));
+        });
+        setPlayerSet(newPlayerSet);
+
+        // Start the game
+        const gameResponse = await axios.get("http://localhost:5002/api/gameRoutes/startGame");
+        setGameId(gameResponse.data.game); // Store the game ID
+        console.log("Game started with ID:", gameResponse.data.game);
+
         setLoading(false);
       } catch (err) {
-        console.error("Error fetching players:", err.message);
-        setError("Failed to fetch players. Please try again later.");
+        console.error("Error initializing game:", err.message);
+        setError("Failed to initialize game. Please try again later.");
         setLoading(false);
       }
     };
 
-    fetchPlayers();
+    initializeGame();
   }, []);
 
   if (loading) {
@@ -32,17 +51,38 @@ export default function MainGame() {
   if (error) {
     return <div style={{ color: 'red' }}>{error}</div>; // Show an error message if fetching fails
   }
-  
-  function handleGuess(guess) {
-    alert("You've sucessfully guessed " + guess);
+  //Validate the guess
+  function validateGuess(guess) {
+    return playerSet.has(guess.trim().toLowerCase());
   }
+  //Handle the guess
+  const handleGuess = async (guess) => {
+    if(!validateGuess(guess)) {
+      alert("invalid guess")
+      return;
+    }
 
+    try {
+      const response = await axios.post("http://localhost:5002/api/gameRoutes/guess", {
+        playerName: guess,
+        gameId: gameId,
+      });
+      
+      // Process the result
+      setGuessResult(response.data.result); // Store the result of the guess
+      
+    } catch (err) {
+      console.error("Error processing guess:", err.message);
+      alert("Error processing guess: " + err.response?.data?.message || err.message);
+    }
+  };
 
+  
   return (
     <div className="generic-cream-bg flex flex-row space-y-4 mt-4">
        <h2 className="text-slate-500">Enter your Guess...</h2>
        <div className="flex flex-row space-x-4">
-        <input type="string"value={guess} className=" border border-black rounded rounded-lg border-[2px] bg-white w-full text-[28px]" 
+        <input type="text" value={guess} className=" border border-black rounded rounded-lg border-[2px] bg-white w-full text-[28px]" 
         onChange={(e) => {
         setGuess(e.target.value)
         }}
@@ -58,21 +98,8 @@ export default function MainGame() {
         }}>GUESS?</button>
        </div>
        <div>
-       <table className="border-collapse w-full">
-    <thead>
-      <tr>
-        <th className="border-b-4 border-dashed border-slate-700 px-4 py-2 text-left">Name</th>
-        <th className="border-b-4 border-dashed border-slate-700 px-4 py-2 text-left">Team</th>
-        <th className="border-b-4 border-dashed border-slate-700 px-4 py-2 text-left">Conference</th>
-        <th className="border-b-4 border-dashed border-slate-700 px-4 py-2 text-left">Division</th>
-        <th className="border-b-4 border-dashed border-slate-700 px-4 py-2 text-left">Position</th>
-        <th className="border-b-4 border-dashed border-slate-700 px-4 py-2 text-left">Height</th>
-        <th className="border-b-4 border-dashed border-slate-700 px-4 py-2 text-left">Age</th>
-        <th className="border-b-4 border-dashed border-slate-700 px-4 py-2 text-left">Number</th>
-      </tr>
-    </thead>
-          </table>
-          <GuessHolder/>
+       
+          <GuessHolder guessResult={guessResult} />
           <div className="grid grid-cols-5 gap-4">
           {Object.keys(groupedPlayers).map((teamName) => (
             <TeamCard key={teamName} teamName={teamName} players={groupedPlayers[teamName]} />

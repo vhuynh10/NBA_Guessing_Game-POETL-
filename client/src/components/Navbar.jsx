@@ -10,7 +10,7 @@ const Navbar = () => {
       </div>
       <div className="items-right flex ml-auto gap-4">
       <button className="border border-rounded border-[2px] cursor-pointer flex justify-end border-[#b91001] bg-[#ff4b33] items-center rounded-md hover:text-slate-700 duration-[200ms] hover:bg-[#FFC067]">
-        <Link to="/login" className="gap-1 px-4 py-1"><i class="fa-solid fa-door-open"></i> Login</Link>
+        <Link to="/login" className="gap-1 px-4 py-1"><i className="fa-solid fa-door-open"></i> Login</Link>
       </button>
       <button className="border border-rounded cursor-pointer border-[2px] border-[#b91001] bg-[#ff4b33] items-center rounded-md hover:text-slate-700 duration-[200ms] hover:bg-[#FFC067]">
         <Link to="/register" className="gap-1 px-4 py-1"><i className="fa-solid fa-user-plus"></i> Register</Link>

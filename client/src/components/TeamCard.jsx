@@ -7,7 +7,6 @@ export default function TeamCard(props) {
 
     const fullName = getFullTeamName(teamName);
     const logosrc = getTeamLogo(teamName);
-   console.log(logosrc);
     
   return (
     <div className="border border-rounded rounded-lg border-black p-4 relative group bg-[#FEFFEC]">
