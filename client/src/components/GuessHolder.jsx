@@ -20,31 +20,13 @@ export default function GuessHolder(props) {
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td colSpan="8" className="border-b-4 border-dashed border-slate-700">
-              <GuessCard className="w-full" guessResult={guessResult} guessNumber={1} />
-            </td>
-          </tr>
-          <tr>
-            <td colSpan="8" className="border-b-4 border-dashed border-slate-700">
-              <GuessCard guessResult={guessResult} guessNumber={2} />
-            </td>
-          </tr>
-          <tr>
-            <td colSpan="8" className="border-b-4 border-dashed border-slate-700">
-              <GuessCard guessResult={guessResult} guessNumber={3} />
-            </td>
-          </tr>
-          <tr>
-            <td colSpan="8" className="border-b-4 border-dashed border-slate-700">
-              <GuessCard guessResult={guessResult} guessNumber={4} />
-            </td>
-          </tr>
-          <tr>
-            <td colSpan="8" className="border-b-4 border-dashed border-slate-700">
-              <GuessCard guessResult={guessResult} guessNumber={5} />
-            </td>
-          </tr>
+          {[1,2,3,4,5].map(i => (
+            <tr key={i}>
+              <td colSpan="8" className="border-b-4 border-dashed border-slate-700">
+                <GuessCard guessResult={guessResult[i-1] || null} guessNumber={i} />
+              </td>
+            </tr>
+          ))}
         </tbody>
       </table>
     </div>

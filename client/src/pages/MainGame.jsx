@@ -8,9 +8,10 @@ export default function MainGame() {
   const [loading, setLoading] = useState(true); // State to handle loading
   const [error, setError] = useState(null); // State to handle errors
   const [guess, setGuess] = useState(""); // State for the guess input
-  const [guessResult, setGuessResult] = useState(null); // State to store the result of the guess
+  const [guessResult, setGuessResult] = useState([]); // State to store the result of the guess
   const [gameId, setGameId] = useState(null); // State to store the current game ID
   const [playerSet, setPlayerSet] = useState(new Set()); // contains all player names
+
   
    // Fetch players and start the game
    useEffect(() => {
@@ -51,17 +52,19 @@ export default function MainGame() {
   if (error) {
     return <div style={{ color: 'red' }}>{error}</div>; // Show an error message if fetching fails
   }
+  
   //Validate the guess
   function validateGuess(guess) {
     return playerSet.has(guess.trim().toLowerCase());
   }
+
   //Handle the guess
   const handleGuess = async (guess) => {
     if(!validateGuess(guess)) {
       alert("invalid guess")
       return;
     }
-
+    
     try {
       const response = await axios.post("http://localhost:5002/api/gameRoutes/guess", {
         playerName: guess,
@@ -69,7 +72,7 @@ export default function MainGame() {
       });
       
       // Process the result
-      setGuessResult(response.data.result); // Store the result of the guess
+      setGuessResult(prev => [...prev, response.data.result]);
       
     } catch (err) {
       console.error("Error processing guess:", err.message);
@@ -99,7 +102,7 @@ export default function MainGame() {
        </div>
        <div>
        
-          <GuessHolder guessResult={guessResult} />
+          <GuessHolder guessResult={guessResult}/>
           <div className="grid grid-cols-5 gap-4">
           {Object.keys(groupedPlayers).map((teamName) => (
             <TeamCard key={teamName} teamName={teamName} players={groupedPlayers[teamName]} />
