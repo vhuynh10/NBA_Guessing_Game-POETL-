@@ -2,6 +2,8 @@ import React, {useEffect, useState } from 'react'
 import GuessHolder from '../components/GuessHolder'
 import TeamCard from '../components/TeamCard';
 import axios from 'axios';
+import {checkIfWinner, removeInvalidPlayers} from '../helper/helper';
+import VictoryScreen from '../components/VictoryScreen';
 
 export default function MainGame() {
   const [groupedPlayers, setGroupedPlayers] = useState({}); // State to store the fetched data
@@ -10,7 +12,8 @@ export default function MainGame() {
   const [guess, setGuess] = useState(""); // State for the guess input
   const [guessResult, setGuessResult] = useState([]); // State to store the result of the guess
   const [gameId, setGameId] = useState(null); // State to store the current game ID
-  const [playerSet, setPlayerSet] = useState(new Set()); // contains all player names
+  const [playerMap, setPlayerMap] = useState(new Map()); // Map for valid player: name --> player obj
+  const [victory, setVictory] = useState(false);
 
   
    // Fetch players and start the game
@@ -20,14 +23,15 @@ export default function MainGame() {
         // Fetch players
         const playersResponse = await axios.get("http://localhost:5002/api/gameRoutes/getPlayers");
         setGroupedPlayers(playersResponse.data);
-
-        // Convert players to a Set for quick lookup
         
-        const newPlayerSet = new Set();
+    
+        // Convert players to a Map for quick lookup
+        
+        const newPlayerMap = new Map();
         Object.values(playersResponse.data).forEach((teamPlayers) => {
-          teamPlayers.forEach((player) => newPlayerSet.add(player.name.toLowerCase()));
+          teamPlayers.forEach((player) => newPlayerMap.set(player.name.toLowerCase(), player));
         });
-        setPlayerSet(newPlayerSet);
+        setPlayerMap(newPlayerMap);
 
         // Start the game
         const gameResponse = await axios.get("http://localhost:5002/api/gameRoutes/startGame");
@@ -55,7 +59,8 @@ export default function MainGame() {
   
   //Validate the guess
   function validateGuess(guess) {
-    return playerSet.has(guess.trim().toLowerCase());
+    const validGuess = guess.trim().toLowerCase();
+    return playerMap.has(validGuess);
   }
 
   //Handle the guess
@@ -73,7 +78,16 @@ export default function MainGame() {
       
       // Process the result
       setGuessResult(prev => [...prev, response.data.result]);
-      
+
+      //Remove all invalid players
+       setGroupedPlayers(prevGroupedPlayers =>
+        removeInvalidPlayers(response.data.result, prevGroupedPlayers)
+      );
+
+      setVictory(checkIfWinner(response.data.result))
+
+      console.log(groupedPlayers);
+
     } catch (err) {
       console.error("Error processing guess:", err.message);
       alert("Error processing guess: " + err.response?.data?.message || err.message);
@@ -101,14 +115,14 @@ export default function MainGame() {
         }}>GUESS?</button>
        </div>
        <div>
-       
+          {victory && <VictoryScreen onClose={() => setVictory(false)} />}
           <GuessHolder guessResult={guessResult}/>
           <div className="grid grid-cols-5 gap-4">
-          {Object.keys(groupedPlayers).map((teamName) => (
+          {Object.keys(groupedPlayers).filter(teamName => groupedPlayers[teamName].length > 0).map((teamName) => (
             <TeamCard key={teamName} teamName={teamName} players={groupedPlayers[teamName]} />
             ))}
           </div>
-          
+           
        </div>
     </div>
   )
