@@ -1,6 +1,31 @@
-###
+### Register a new user
+POST http://localhost:5002/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "testuser4@example.com",
+  "password": "securePassword123@"
+}
+
+
+###Login with the registered user
+POST http://localhost:5002/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "testuser4@example.com",
+  "password": "securePassword123@"
+}
+
+###Start a new game(anonymous)
 GET http://localhost:5002/api/gameRoutes/startGame
 Content-Type: application/json
+
+###Start a new game(authenticated)
+GET http://localhost:5002/api/gameRoutes/startGame
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsImtpZCI6IkRhV3U5djcrN3FDT05zZGciLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3FjbWFldG1xanJwdmJkd2Zqd3F4LnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiI1ZTQwNTMwYS05ZjA2LTQyZTMtOGY5My1jOWI5NTdkYjY3ZDIiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzQ4MjQ1NDAyLCJpYXQiOjE3NDgyNDE4MDIsImVtYWlsIjoidGVzdHVzZXIzQGV4YW1wbGUuY29tIiwicGhvbmUiOiIiLCJhcHBfbWV0YWRhdGEiOnsicHJvdmlkZXIiOiJlbWFpbCIsInByb3ZpZGVycyI6WyJlbWFpbCJdfSwidXNlcl9tZXRhZGF0YSI6eyJlbWFpbCI6InRlc3R1c2VyM0BleGFtcGxlLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJwaG9uZV92ZXJpZmllZCI6ZmFsc2UsInN1YiI6IjVlNDA1MzBhLTlmMDYtNDJlMy04ZjkzLWM5Yjk1N2RiNjdkMiJ9LCJyb2xlIjoiYXV0aGVudGljYXRlZCIsImFhbCI6ImFhbDEiLCJhbXIiOlt7Im1ldGhvZCI6InBhc3N3b3JkIiwidGltZXN0YW1wIjoxNzQ4MjQxODAyfV0sInNlc3Npb25faWQiOiI5ZmVmNTUwOC1hYWNjLTQ5YTctOTYxOS1kOTJkZTRkN2JmMGUiLCJpc19hbm9ueW1vdXMiOmZhbHNlfQ.3Su2muBtz5n8NZbasMUFgEYTT5f0vWH2BnWzoj4zh9w
+
 
 ###
 GET http://localhost:5002/api/gameRoutes/getPlayers
@@ -11,6 +36,13 @@ POST http://localhost:5002/api/gameRoutes/guess
 Content-Type: application/json
 
 {
-  "playerName": "Stephen Curry",
-  "gameId": 22
+  "playerName": "Grayson Allen",
+  "gameId": 264
 }
+
+###
+POST http://localhost:5002/api/gameRoutes/logout
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsImtpZCI6IkRhV3U5djcrN3FDT05zZGciLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3FjbWFldG1xanJwdmJkd2Zqd3F4LnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiI4YjZkNjU0NC01M2I5LTQxMWMtYjAxZi01YTY0N2QyZTA5NmMiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzQ4MjM5MzQ3LCJpYXQiOjE3NDgyMzU3NDcsImVtYWlsIjoidGVzdHVzZXJAZXhhbXBsZS5jb20iLCJwaG9uZSI6IiIsImFwcF9tZXRhZGF0YSI6eyJwcm92aWRlciI6ImVtYWlsIiwicHJvdmlkZXJzIjpbImVtYWlsIl19LCJ1c2VyX21ldGFkYXRhIjp7ImVtYWlsIjoidGVzdHVzZXJAZXhhbXBsZS5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwicGhvbmVfdmVyaWZpZWQiOmZhbHNlLCJzdWIiOiI4YjZkNjU0NC01M2I5LTQxMWMtYjAxZi01YTY0N2QyZTA5NmMifSwicm9sZSI6ImF1dGhlbnRpY2F0ZWQiLCJhYWwiOiJhYWwxIiwiYW1yIjpbeyJtZXRob2QiOiJwYXNzd29yZCIsInRpbWVzdGFtcCI6MTc0ODIzNTc0N31dLCJzZXNzaW9uX2lkIjoiYWUzMjNkOTUtYTQ5MC00OGU1LWJjMmItYmIyMjEyYmQ5OGQ4IiwiaXNfYW5vbnltb3VzIjpmYWxzZX0.7FMkMRp-ckVecf851CZ0to6761WdwIXM1R4z8v0tmu8
+
+{}

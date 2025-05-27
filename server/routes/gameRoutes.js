@@ -11,68 +11,76 @@ const successResponse = (res, data) => {
     return res.status(200).json(data);
 };
 
+
 // Route to fetch a random player using Math.random()
 router.get('/startGame', async (req, res) => {
     try {
-
-        // Check if the user is authenticated
-        // If not, allow anonymous play
-        const token = req.headers.authorization?.split(' ')[1]; 
-        let userId = null;
+        const token = req.headers.authorization?.split(' ')[1];
+        let userStatsId = null;
 
         if (token) {
-            const { data: { user }, error } = await supabase.auth.getUser(token);
-            if (error) {
-                console.warn('Invalid token:', error.message); // still allow anonymous play
+            const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+            if (authError || !user) {
+                console.warn('Invalid token or failed to fetch user:', authError?.message);
             } else {
-                userId = user.id;
+                console.log('Authenticated Supabase UID:', user.id);
+
+                // Get the userstats.id WHERE userstats.user_id = Supabase UID
+                const { data: userStats, error: statsError } = await supabase
+                    .from('userstats')
+                    .select('id')
+                    .eq('user_id', user.id)
+                    .maybeSingle(); // Only one entry expected
+
+                if (statsError) {
+                    console.warn('User not found in userstats table:', statsError.message);
+                } else {
+                    userStatsId = userStats.id;
+                }
             }
         }
 
-        const { data: players, error } = await supabase
+        // Get a random available player
+        const { data: players, error: playersError } = await supabase
             .from('players')
             .select('*')
             .eq('is_available', true);
 
-        if (error) {
-            console.error('Error fetching players:', error.message);
-            return handleError(res, 500, 'Error fetching players');
+        if (playersError || !players || players.length === 0) {
+            return res.status(404).json({ message: 'No available players found' });
         }
 
-        if (!players || players.length === 0) {
-            return handleError(res, 404, 'No available players found');
-        }
+        const randomPlayer = players[Math.floor(Math.random() * players.length)];
 
-        //Select random player
-        const randomIndex = Math.floor(Math.random() * players.length);
-        const randomPlayer = players[randomIndex];
-
-        const { data: game, error: gameError } = await supabase
+        // Insert game with userStatsId or null
+        const { data: newGame, error: insertError } = await supabase
             .from('games')
             .insert([{
                 created_at: new Date(),
                 hidden_player_id: randomPlayer.id,
-                user_id: userId  
+                user_id: userStatsId  // can be null for anonymous
             }])
-            .select() // so it returns inserted data
+            .select()
             .single();
 
-        if (gameError) {
-            console.error('Error creating game session:', gameError.message);
-            return handleError(res, 500, 'Error creating game session');
+        if (insertError) {
+            console.error('Error creating game:', insertError.message);
+            return res.status(500).json({ message: 'Failed to start game' });
         }
 
         return res.json({
             message: 'Game started successfully!',
-            game: game.id,
-            player: randomPlayer
+            game_id: newGame.id,
+            hidden_player: randomPlayer,
+            userstats_id: userStatsId ?? null
         });
 
     } catch (err) {
-        console.error('Server error:', err.message);
-        return handleError(res, 503, 'Server error: ' + err.message);
+        console.error('Unexpected error:', err.message);
+        return res.status(500).json({ message: 'Unexpected server error' });
     }
 });
+
 
 //Displays all the players on the homepage
 router.get('/getPlayers', async (req, res) => {
@@ -114,6 +122,16 @@ router.post('/guess', async (req, res) => {
     }
 
     try {
+        // First verify if guessed player exists
+        const { data: guessedPlayer, error: guessedPlayerError } = await supabase
+            .from('players')
+            .select('id, name, height, number, position, team, division, conference')
+            .eq('name', playerName)
+            .single();
+
+        if (guessedPlayerError || !guessedPlayer) {
+            return handleError(res, 404, 'Player not found');
+        }
         //Get hidden_player_id from games table
         const { data: gameData, error: gameError } = await supabase
             .from('games')
@@ -133,26 +151,12 @@ router.post('/guess', async (req, res) => {
 
         const hiddenPlayerId = gameData.hidden_player_id;
 
-        // Paralell fetch the guess and hidden player
-        const [
-            { data: guessedPlayer, error: guessedPlayerError },
-            { data: hiddenPlayer, error: hiddenPlayerError }
-        ] = await Promise.all([
-            supabase
-                .from('players')
-                .select('id, name, height, number, position, team, division, conference')
-                .eq('name', playerName)
-                .single(),
-            supabase
-                .from('players')
-                .select('height, number, position, team, division, conference, name')
-                .eq('id', hiddenPlayerId)
-                .single()
-        ]);
-
-        if (guessedPlayerError || !guessedPlayer) {
-            return handleError(res, 404, 'Player not found');
-        }
+        // Get hidden player data
+        const { data: hiddenPlayer, error: hiddenPlayerError } = await supabase
+            .from('players')
+            .select('height, number, position, team, division, conference, name')
+            .eq('id', gameData.hidden_player_id)
+            .single();
 
         if (hiddenPlayerError || !hiddenPlayer) {
             return handleError(res, 404, 'Hidden player not found');
@@ -170,6 +174,27 @@ router.post('/guess', async (req, res) => {
     } catch (err) {
         console.error('Error with guess logic:', err.message);
         return handleError(res, 500, 'Error processing guess');
+    }
+});
+
+router.post('/logout', async (req, res) => {
+    try {
+        // Optional: Check if user is authenticated (recommended)
+        const token = req.headers.authorization?.split(' ')[1];
+        if (!token) {
+            return handleError(res, 401, 'No authentication token provided');
+        }
+
+        const { error } = await supabase.auth.signOut();
+        
+        if (error) {
+            return handleError(res, 500, 'Error during logout');
+        }
+
+        return successResponse(res, { message: 'Logged out successfully' });
+    } catch (err) {
+        console.error('Logout error:', err.message);
+        return handleError(res, 503, 'Server error during logout');
     }
 });
 

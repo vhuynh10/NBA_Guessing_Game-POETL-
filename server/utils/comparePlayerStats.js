@@ -1,3 +1,5 @@
+import getHeightToInches from './getHeightToInches.js';
+
 const comparePlayerStats = (guessedPlayer, hiddenPlayer) => {
     const result = {
         team: {
@@ -22,17 +24,17 @@ const comparePlayerStats = (guessedPlayer, hiddenPlayer) => {
         },
         height: {
             value: guessedPlayer.height,
-            direction: guessedPlayer.height === hiddenPlayer.height
+            direction: getHeightToInches(guessedPlayer.height) === getHeightToInches(hiddenPlayer.height)
                 ? 'match'
-                : guessedPlayer.height > hiddenPlayer.height
+                : getHeightToInches(guessedPlayer.height) > getHeightToInches(hiddenPlayer.height)
                     ? 'lower'
                     : 'higher'
         },
         number: {
             value: guessedPlayer.number,
-            direction: guessedPlayer.number === hiddenPlayer.number
+            direction: parseInt(guessedPlayer.number) === parseInt(hiddenPlayer.number)
                 ? 'match'
-                : guessedPlayer.number > hiddenPlayer.number
+                : parseInt(guessedPlayer.number) > parseInt(hiddenPlayer.number)
                     ? 'lower'
                     : 'higher'
         }
