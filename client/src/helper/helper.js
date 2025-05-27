@@ -177,21 +177,27 @@ export function removeInvalidPlayers(guessResult, groupedPlayers) {
 
     //Filter By Number
     Object.entries(newGroupedPlayers).forEach(([teamName, teamPlayers]) => {
-        if(number.direction === "higher") {
-             newGroupedPlayers[teamName] = teamPlayers.filter(player => player.number >= number.value)
+        if(number.direction === "match") {
+             newGroupedPlayers[teamName] = teamPlayers.filter(player => player.number === number.value)
+        } else if (number.direction === "higher") {
+            newGroupedPlayers[teamName] = teamPlayers.filter(player => player.number > number.value)
         } else {
-            newGroupedPlayers[teamName] = teamPlayers.filter(player => player.number <= number.value)
+             newGroupedPlayers[teamName] = teamPlayers.filter(player => player.number < number.value)
         }
     });
 
     //Filter By Height
     Object.entries(newGroupedPlayers).forEach(([teamName, teamPlayers]) => {
-        if(height.direction === "higher") {
-            newGroupedPlayers[teamName] = teamPlayers.filter(player => getHeightInInches(player.height) >= getHeightInInches(height.value))
+        if(height.direction === "match") {
+             newGroupedPlayers[teamName] = teamPlayers.filter(player => getHeightInInches(player.height) === getHeightInInches(height.value))
+        } else if (height.direction === "higher") {
+            newGroupedPlayers[teamName] = teamPlayers.filter(player => getHeightInInches(player.height) > getHeightInInches(height.value))
         } else {
-            newGroupedPlayers[teamName] = teamPlayers.filter(player => getHeightInInches(player.height) <= getHeightInInches(height.value))
+             newGroupedPlayers[teamName] = teamPlayers.filter(player => getHeightInInches(player.height) < getHeightInInches(height.value))
         }
     });
+
+    console.log(groupedPlayers);
 
     return newGroupedPlayers;
 }
