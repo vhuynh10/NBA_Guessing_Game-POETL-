@@ -38,7 +38,7 @@ const Register = () => {
   };
 
   return (
-    <div className="generic-cream-bg">
+    <div className="flex flex-col items-center">
       <h2>Register</h2>
       <form className="space-y-4" onSubmit={handleSubmit}>
         <label htmlFor="username">Email:</label>
