@@ -86,7 +86,6 @@ export default function MainGame() {
 
       setVictory(checkIfWinner(response.data.result))
 
-      console.log(groupedPlayers);
 
     } catch (err) {
       console.error("Error processing guess:", err.message);
@@ -96,7 +95,7 @@ export default function MainGame() {
 
   
   return (
-    <div className="generic-cream-bg flex flex-row space-y-4 mt-4">
+    <div className="generic-cream-bg flex flex-row space-y-4">
        <h2 className="text-slate-500">Enter your Guess...</h2>
        <div className="flex flex-row space-x-4">
         <input type="text" value={guess} className=" border border-black rounded rounded-lg border-[2px] bg-white w-full text-[28px]" 
