@@ -5,7 +5,7 @@ export default function GuessHolder(props) {
   const { guessResult } = props;
 
   return (
-    <div>
+    <>
       <table className="border-separate w-full my-4 border-spacing-y-4">
         <thead>
           <tr>
@@ -26,6 +26,6 @@ export default function GuessHolder(props) {
           ))}
         </tbody>
       </table>
-    </div>
+    </>
   );
 }

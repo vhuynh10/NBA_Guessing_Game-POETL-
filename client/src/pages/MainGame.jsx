@@ -4,6 +4,7 @@ import TeamCard from '../components/TeamCard';
 import axios from 'axios';
 import {checkIfWinner, removeInvalidPlayers} from '../helper/helper';
 import VictoryScreen from '../components/VictoryScreen';
+import RuleScreen from '../components/RuleScreen';
 
 export default function MainGame() {
   const [groupedPlayers, setGroupedPlayers] = useState({}); // State to store the fetched data
@@ -14,6 +15,7 @@ export default function MainGame() {
   const [gameId, setGameId] = useState(null); // State to store the current game ID
   const [playerMap, setPlayerMap] = useState(new Map()); // Map for valid player: name --> player obj
   const [victory, setVictory] = useState(false);
+  const [showRules, setShowRules] = useState(false);
 
   
    // Fetch players and start the game
@@ -57,6 +59,11 @@ export default function MainGame() {
     return <div style={{ color: 'red' }}>{error}</div>; // Show an error message if fetching fails
   }
   
+  //Toggles showing the rules
+  function toggleShowRule() {
+    setShowRules(!showRules);
+  }
+
   //Validate the guess
   function validateGuess(guess) {
     const validGuess = guess.trim().toLowerCase();
@@ -96,8 +103,11 @@ export default function MainGame() {
   
   return (
     <div className="flex flex-col space-y-4 items-center w-full">
-       <h2 className="text-slate-500">Enter your Guess...</h2>
-       <div className="flex flex-row space-x-4">
+
+       <h2 className="text-slate-600 text-4xl">Enter your Guess...</h2>
+
+       <div className="flex flex-row items-center space-x-4">
+        { !showRules && <button onClick={toggleShowRule}><i className="fa-regular fa-circle-question text-3xl hover:text-gray-600"></i></button>}
         <input type="text" value={guess} className=" border border-black rounded rounded-lg border-[2px] bg-white w-full text-[28px]" 
         onChange={(e) => {
         setGuess(e.target.value)
@@ -113,7 +123,9 @@ export default function MainGame() {
           setGuess("")
         }}>GUESS?</button>
        </div>
+
        <div>
+          {showRules && <RuleScreen toggleShowRule={toggleShowRule}/>}
           {victory && <VictoryScreen onClose={() => setVictory(false)} />}
           <GuessHolder guessResult={guessResult}/>
           <div className="grid grid-cols-5 gap-4 py-4">
