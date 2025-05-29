@@ -45,7 +45,7 @@ function Home() {
   }
 
   return (
-    <section className="generic-cream-bg">
+    <section>
       <div>
       <h1 className="py-20">Welcome {email ? `${email}` : "to the Home Page"}</h1>
       {error && <p style={{ color: "red" }}>{error}</p>} {/* Display error message if any */}

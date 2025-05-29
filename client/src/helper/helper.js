@@ -133,3 +133,90 @@ export function getTeamLogo(teamName) {
             return "/src/assets/react.svg"; // Fallback to React logo
     }
 }
+
+export function removeInvalidPlayers(guessResult, groupedPlayers) {
+    const {
+        conference,
+        division,
+        height,
+        number,
+        position,
+        team,
+    } = guessResult;
+
+    // Start with the original groupedPlayers
+    let newGroupedPlayers = { ...groupedPlayers };
+
+    // Filter By Conference
+    Object.entries(newGroupedPlayers).forEach(([teamName, teamPlayers]) => {
+        newGroupedPlayers[teamName] = conference.match
+            ? teamPlayers.filter(player => player.conference === conference.value)
+            : teamPlayers.filter(player => player.conference !== conference.value);
+    });
+
+    // Filter By Division
+    Object.entries(newGroupedPlayers).forEach(([teamName, teamPlayers]) => {
+        newGroupedPlayers[teamName] = division.match
+            ? teamPlayers.filter(player => player.division === division.value)
+            : teamPlayers.filter(player => player.division !== division.value);
+    });
+
+    // Filter By Team
+    Object.entries(newGroupedPlayers).forEach(([teamName, teamPlayers]) => {
+        newGroupedPlayers[teamName] = team.match
+            ? teamPlayers.filter(player => player.team === team.value)
+            : teamPlayers.filter(player => player.team !== team.value);
+    });
+
+    // Filter By Position
+    Object.entries(newGroupedPlayers).forEach(([teamName, teamPlayers]) => {
+        newGroupedPlayers[teamName] = position.match
+            ? teamPlayers.filter(player => player.position === position.value)
+            : teamPlayers.filter(player => player.position !== position.value);
+    });
+
+    //Filter By Number
+    Object.entries(newGroupedPlayers).forEach(([teamName, teamPlayers]) => {
+        if(number.direction === "match") {
+             newGroupedPlayers[teamName] = teamPlayers.filter(player => player.number === number.value)
+        } else if (number.direction === "higher") {
+            newGroupedPlayers[teamName] = teamPlayers.filter(player => player.number > number.value)
+        } else {
+             newGroupedPlayers[teamName] = teamPlayers.filter(player => player.number < number.value)
+        }
+    });
+
+    //Filter By Height
+    Object.entries(newGroupedPlayers).forEach(([teamName, teamPlayers]) => {
+        if(height.direction === "match") {
+             newGroupedPlayers[teamName] = teamPlayers.filter(player => getHeightInInches(player.height) === getHeightInInches(height.value))
+        } else if (height.direction === "higher") {
+            newGroupedPlayers[teamName] = teamPlayers.filter(player => getHeightInInches(player.height) > getHeightInInches(height.value))
+        } else {
+             newGroupedPlayers[teamName] = teamPlayers.filter(player => getHeightInInches(player.height) < getHeightInInches(height.value))
+        }
+    });
+
+    console.log(groupedPlayers);
+
+    return newGroupedPlayers;
+}
+
+function getHeightInInches(height) {
+    const [ft, inch] = height.split('-').map(Number);
+  return ft * 12 + inch;
+}
+
+
+export function checkIfWinner(guessResult) {
+    return (
+        guessResult.name?.match === true &&
+        guessResult.team?.match === true &&
+        guessResult.conference?.match === true &&
+        guessResult.division?.match === true &&
+        guessResult.position?.match === true &&
+        guessResult.number?.direction === "match" &&
+        guessResult.height?.direction === "match"
+    );
+    
+}
