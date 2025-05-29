@@ -124,7 +124,7 @@ export default function MainGame() {
         }}>GUESS?</button>
        </div>
 
-       <div>
+       <div className="w-[80%]">
           {showRules && <RuleScreen toggleShowRule={toggleShowRule}/>}
           {victory && <VictoryScreen onClose={() => setVictory(false)} />}
           <GuessHolder guessResult={guessResult}/>

@@ -6,7 +6,7 @@ export default function GuessHolder(props) {
 
   return (
     <div className='flex justify-center w-full'>
-      <table className="border-separate my-4 w-[80%] border-spacing-y-4 table-fixed">
+      <table className="border-separate my-4 w-full border-spacing-y-4 table-fixed">
         <thead>
           <tr>
             <th className="border-b-4 border-dashed border-slate-700 px-4 py-2 text-center w-1/7">Name</th>
