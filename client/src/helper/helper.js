@@ -218,5 +218,14 @@ export function checkIfWinner(guessResult) {
         guessResult.number?.direction === "match" &&
         guessResult.height?.direction === "match"
     );
-    
 }
+
+export function formatTime(totalSeconds) {
+     const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    return `${minutes.toString().padStart(2, '0')}:${seconds
+      .toString()
+      .padStart(2, '0')}`;
+}
+
+

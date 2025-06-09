@@ -18,45 +18,55 @@ export default function MainGame() {
   const [showRules, setShowRules] = useState(false); //Boolean to show rule set
   const [suggestions, setSuggestions] = useState([]); // Array that holds suggested players
   const [allNames, setAllNames] = useState([]);
+  const [seconds, setSeconds] = useState(0); //Use state for timer
  
 
-  
-   // Fetch players and start the game
-   useEffect(() => {
-    const initializeGame = async () => {
-      try {
-        // Fetch players
-        const playersResponse = await axios.get("http://localhost:5002/api/gameRoutes/getPlayers");
-        setGroupedPlayers(playersResponse.data);
-        
-    
-        // Convert players to a Map for quick lookup
-        const namesArray = [];
-        const newPlayerMap = new Map();
-        Object.values(playersResponse.data).forEach((teamPlayers) => {
-          teamPlayers.forEach((player) => {
-            newPlayerMap.set(player.name.toLowerCase(), player);
-            namesArray.push(player.name);
-          });
+  const initializeGame = async () => {
+    try {
+      const playersResponse = await axios.get("http://localhost:5002/api/gameRoutes/getPlayers");
+      setGroupedPlayers(playersResponse.data);
+
+      const namesArray = [];
+      const newPlayerMap = new Map();
+      Object.values(playersResponse.data).forEach((teamPlayers) => {
+        teamPlayers.forEach((player) => {
+          newPlayerMap.set(player.name.toLowerCase(), player);
+          namesArray.push(player.name);
         });
-        
-          setPlayerMap(newPlayerMap);
-          namesArray.sort((a, b) => a.localeCompare(b));
-          setAllNames(namesArray);
+      });
 
-        // Start the game
-        const gameResponse = await axios.get("http://localhost:5002/api/gameRoutes/startGame");
-        setGameId(gameResponse.data.game); // Store the game ID
-        console.log("Game started with ID:", gameResponse.data.game);
+      setPlayerMap(newPlayerMap);
+      namesArray.sort((a, b) => a.localeCompare(b));
+      setAllNames(namesArray);
 
-        setLoading(false);
-      } catch (err) {
-        console.error("Error initializing game:", err.message);
-        setError("Failed to initialize game. Please try again later.");
-        setLoading(false);
-      }
-    };
+      const gameResponse = await axios.get("http://localhost:5002/api/gameRoutes/startGame");
+      setGameId(gameResponse.data.game);
+      setGuess("");
+      setGuessResult([]);
+      setVictory(false);
+      setShowRules(false);
+      setSuggestions([]);
+      setLoading(false);
+      setSeconds(0);
+    } catch (err) {
+      console.error("Error initializing game:", err.message);
+      setError("Failed to initialize game. Please try again later.");
+      setLoading(false);
+    }
+  };
 
+  // Timer effect: start timer on game start, stop on victory
+  useEffect(() => {
+    if (victory) return;
+
+    const interval = setInterval(() => {
+      setSeconds((prev) => prev + 1);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [victory]);
+
+   useEffect(() => {
     initializeGame();
   }, []);
 
@@ -173,7 +183,7 @@ export default function MainGame() {
 
        <div className="w-[80%]">
           {showRules && <RuleScreen toggleShowRule={toggleShowRule}/>}
-          {victory && <VictoryScreen onClose={() => setVictory(false)} />}
+          {victory && <VictoryScreen onClose={() => setVictory(false)} onRestart={initializeGame} seconds={seconds} />}
           <GuessHolder guessResult={guessResult}/>
           <div className="grid grid-cols-5 gap-4 py-4">
           {Object.keys(groupedPlayers).filter(teamName => groupedPlayers[teamName].length > 0).map((teamName) => (
