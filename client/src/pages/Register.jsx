@@ -6,6 +6,7 @@ const Register = () => {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState("");
 
+  const API_URL = process.env.REACT_APP_API_URL;
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -14,11 +15,11 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log('Form Data:', formData);
+    console.log('API_URL:', API_URL); // Debug log to check if API_URL is set
 
-  
     try {
-      // Send POST request to backend to handle registration
-      const response = await axios.post("http://localhost:5002/api/auth/register", {
+      // Send POST request to backend using API_URL
+      const response = await axios.post(`${API_URL}/api/auth/register`, {
         email: formData.username, // username as email
         password: formData.password,
       }, {
