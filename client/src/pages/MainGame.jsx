@@ -14,40 +14,59 @@ export default function MainGame() {
   const [guessResult, setGuessResult] = useState([]); // State to store the result of the guess
   const [gameId, setGameId] = useState(null); // State to store the current game ID
   const [playerMap, setPlayerMap] = useState(new Map()); // Map for valid player: name --> player obj
-  const [victory, setVictory] = useState(false);
-  const [showRules, setShowRules] = useState(false);
+  const [victory, setVictory] = useState(false); //Boolean to show victory
+  const [showRules, setShowRules] = useState(false); //Boolean to show rule set
+  const [suggestions, setSuggestions] = useState([]); // Array that holds suggested players
+  const [allNames, setAllNames] = useState([]);
+  const [seconds, setSeconds] = useState(0); //Use state for timer
+ 
 
-  
-   // Fetch players and start the game
-   useEffect(() => {
-    const initializeGame = async () => {
-      try {
-        // Fetch players
-        const playersResponse = await axios.get("http://localhost:5002/api/gameRoutes/getPlayers");
-        setGroupedPlayers(playersResponse.data);
-        
-    
-        // Convert players to a Map for quick lookup
-        
-        const newPlayerMap = new Map();
-        Object.values(playersResponse.data).forEach((teamPlayers) => {
-          teamPlayers.forEach((player) => newPlayerMap.set(player.name.toLowerCase(), player));
+  const initializeGame = async () => {
+    try {
+      const playersResponse = await axios.get("http://localhost:5002/api/gameRoutes/getPlayers");
+      setGroupedPlayers(playersResponse.data);
+
+      const namesArray = [];
+      const newPlayerMap = new Map();
+      Object.values(playersResponse.data).forEach((teamPlayers) => {
+        teamPlayers.forEach((player) => {
+          newPlayerMap.set(player.name.toLowerCase(), player);
+          namesArray.push(player.name);
         });
-        setPlayerMap(newPlayerMap);
+      });
 
-        // Start the game
-        const gameResponse = await axios.get("http://localhost:5002/api/gameRoutes/startGame");
-        setGameId(gameResponse.data.game); // Store the game ID
-        console.log("Game started with ID:", gameResponse.data.game);
+      setPlayerMap(newPlayerMap);
+      namesArray.sort((a, b) => a.localeCompare(b));
+      setAllNames(namesArray);
 
-        setLoading(false);
-      } catch (err) {
-        console.error("Error initializing game:", err.message);
-        setError("Failed to initialize game. Please try again later.");
-        setLoading(false);
-      }
-    };
+      const gameResponse = await axios.get("http://localhost:5002/api/gameRoutes/startGame");
+      setGameId(gameResponse.data.game);
+      setGuess("");
+      setGuessResult([]);
+      setVictory(false);
+      setShowRules(false);
+      setSuggestions([]);
+      setLoading(false);
+      setSeconds(0);
+    } catch (err) {
+      console.error("Error initializing game:", err.message);
+      setError("Failed to initialize game. Please try again later.");
+      setLoading(false);
+    }
+  };
 
+  // Timer effect: start timer on game start, stop on victory
+  useEffect(() => {
+    if (victory) return;
+
+    const interval = setInterval(() => {
+      setSeconds((prev) => prev + 1);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [victory]);
+
+   useEffect(() => {
     initializeGame();
   }, []);
 
@@ -63,6 +82,11 @@ export default function MainGame() {
   function toggleShowRule() {
     setShowRules(!showRules);
   }
+  //Resets Suggestions after player selects one
+  const handleSuggestionClick = (suggestion) => {
+    setGuess(suggestion);
+    setSuggestions([]);
+  };
 
   //Validate the guess
   function validateGuess(guess) {
@@ -106,27 +130,60 @@ export default function MainGame() {
 
        <h2 className="text-slate-600 text-4xl">Enter your Guess...</h2>
 
-       <div className="flex flex-row items-center space-x-4">
+       <div className="flex flex-row items-center space-x-4 py-8">
         { !showRules && <button onClick={toggleShowRule}><i className="fa-regular fa-circle-question text-3xl hover:text-gray-600"></i></button>}
-        <input type="text" value={guess} className=" border border-black rounded rounded-lg border-[2px] bg-white w-full text-[28px]" 
-        onChange={(e) => {
-        setGuess(e.target.value)
-        }}
-        onKeyDown={(e) => {
-          if (e.key === "Enter") {
-            handleGuess(guess); // Trigger guess on Enter key
-            setGuess(""); // Clear the input field
+        <span className='flex flex-col justify-center relative'>
+            <input type="text" value={guess} className=" border border-black rounded rounded-lg border-[2px] bg-white w-full text-[28px]" 
+          onChange={(e) => {
+            const inputValue = e.target.value;
+             setGuess(inputValue);
+              if (inputValue.length > 0) {
+                const filtered = allNames.filter((name) =>
+                name.toLowerCase().startsWith(inputValue.toLowerCase())
+                );
+                setSuggestions(filtered); // filtered contains original-cased names
+              } else {
+                setSuggestions([]);
+            }
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              handleGuess(guess); // Trigger guess on Enter key
+              setGuess(""); // Clear the input field
+            }
+          }}
+           onBlur={() => setTimeout(() => setSuggestions([]), 100)}
+           onFocus={() => {
+            if (guess.length > 0) {
+              const filtered = allNames.filter((name) =>
+              name.toLowerCase().startsWith(guess.toLowerCase())
+            );
+            setSuggestions(filtered);
           }
-        }}></input>
+          }}
+           ></input>
+          {suggestions.length > 0 && (
+          <ul className="absolute left-0 top-full z-10 w-full overflow-y-auto bg-white max-h-24 border border-gray-300 rounded shadow">
+            {suggestions.map((suggestion, index) => (
+              <li className="hover:bg-blue-200 px-2 py-1 cursor-pointer"key={index} onClick={() => handleSuggestionClick(suggestion)}>
+                  {suggestion}
+              </li>
+              ))}
+            </ul>
+          )}
+        </span>
+        
+      
+        
         <button className="border border-4px border-[#C8102E] p-2 rounded rounded-lg text-[24px] text-white bg-[#FF474C] text-semibold hover:bg-[#A8DCAB] hover:border-[#2E6F40] cursor-pointer" onClick={() => {
           handleGuess(guess)
           setGuess("")
         }}>GUESS?</button>
        </div>
 
-       <div>
+       <div className="w-[80%]">
           {showRules && <RuleScreen toggleShowRule={toggleShowRule}/>}
-          {victory && <VictoryScreen onClose={() => setVictory(false)} />}
+          {victory && <VictoryScreen onClose={() => setVictory(false)} onRestart={initializeGame} seconds={seconds} />}
           <GuessHolder guessResult={guessResult}/>
           <div className="grid grid-cols-5 gap-4 py-4">
           {Object.keys(groupedPlayers).filter(teamName => groupedPlayers[teamName].length > 0).map((teamName) => (

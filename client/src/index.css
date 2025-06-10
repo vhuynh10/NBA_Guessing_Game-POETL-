@@ -25,4 +25,15 @@ html, body {
   font-family: 'Lexend', sans-serif;
   background-color: #fdfbd4;
 }
-  
+
+.text-outline-thick {
+  text-shadow:
+    -2px -2px 0 black,
+     2px -2px 0 black,
+    -2px  2px 0 black,
+     2px  2px 0 black,
+     0px  2px 0 black,
+     2px  0px 0 black,
+    -2px  0px 0 black,
+     0px -2px 0 black;
+}
