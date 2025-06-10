@@ -3,6 +3,7 @@ import supabase from '../config/supabaseClient.js';
 import comparePlayerStats from '../utils/comparePlayerStats.js';
 
 const router = express.Router();
+
 const handleError = (res, statusCode, message) => {
     return res.status(statusCode).json({ message });
 };
@@ -15,27 +16,25 @@ const successResponse = (res, data) => {
 // Route to fetch a random player using Math.random()
 router.get('/startGame', async (req, res) => {
     try {
+        
         const token = req.headers.authorization?.split(' ')[1];
         let userStatsId = null;
 
         if (token) {
             const { data: { user }, error: authError } = await supabase.auth.getUser(token);
-            if (authError || !user) {
-                console.warn('Invalid token or failed to fetch user:', authError?.message);
-            } else {
-                console.log('Authenticated Supabase UID:', user.id);
+            if (!authError && user) {
 
-                // Get the userstats.id WHERE userstats.user_id = Supabase UID
+                // Get user_stats entry using user.id from Supabase Auth
                 const { data: userStats, error: statsError } = await supabase
                     .from('userstats')
                     .select('id')
                     .eq('user_id', user.id)
-                    .maybeSingle(); // Only one entry expected
+                    .maybeSingle();
 
-                if (statsError) {
-                    console.warn('User not found in userstats table:', statsError.message);
+                if (statsError || !userStats) {
+                    console.error('User stats fetch error:', statsError?.message || 'Not found');
                 } else {
-                    userStatsId = userStats.id;
+                    userStatsId = userStats.id; // This is the FK you'll insert into the `games` table
                 }
             }
         }
@@ -122,6 +121,21 @@ router.post('/guess', async (req, res) => {
     }
 
     try {
+        //Check if game exists and is not already completed
+        const { data: existingGame, error: gameCheckError } = await supabase
+            .from('games')
+            .select('is_win, guess_count')
+            .eq('id', gameId)
+            .single();
+
+        if (gameCheckError) {
+            return handleError(res, 404, 'Game not found');
+        }
+        // Return early if game is already complete
+        if (existingGame.is_win || existingGame.guess_count >= 5) {
+            return handleError(res, 403, 'Game already completed');
+        }
+
         // First verify if guessed player exists
         const { data: guessedPlayer, error: guessedPlayerError } = await supabase
             .from('players')
@@ -164,11 +178,28 @@ router.post('/guess', async (req, res) => {
 
         //Compare guessed and hidden player
         const result = comparePlayerStats(guessedPlayer, hiddenPlayer);
+        const isGameOver = result.match || gameData.guess_count >= 5;
 
-        if (gameData.guess_count >= 5) {
-            return handleError(res, 403, `Game Over: Guess limit reached: ${hiddenPlayer.name}`);
+        if (isGameOver) {
+            // Update game status and end it
+            const { error: updateError } = await supabase
+                .from('games')
+                .update({ 
+                    is_win: result.match,
+                })
+                .eq('id', gameId);
+
+            if (updateError) {
+                return handleError(res, 500, 'Error updating game status');
+            }
+
+            // Return final game state
+            return successResponse(res, {
+                result,
+                gameOver: true,
+                message: result.match ? 'Correct guess!' : `Game Over. The player was ${hiddenPlayer.name}`
+            });
         }
-
         return successResponse(res, { result });
 
     } catch (err) {

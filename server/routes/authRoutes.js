@@ -7,7 +7,7 @@ const router = express.Router();
 // Sign up route
 router.post('/register', async (req, res) => {
     const { email, password } = req.body;
-    
+
     // Validate email and password
     if (!email || !password) {
         return res.status(400).json({ message: "Email and password are required" });
@@ -65,7 +65,7 @@ router.post('/login', async (req, res) => {
             return res.status(401).json({ message: "Invalid email or password", error: error.message });
         }
 
-        res.json({ message: "Login successful", session: data.session });
+        res.json({ message: "Login successful", session: data.session }); //JWT token is in data.session.access_token
 
     } catch (err) {
         console.error(err.message);
