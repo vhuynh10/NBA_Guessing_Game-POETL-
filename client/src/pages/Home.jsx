@@ -2,11 +2,14 @@ import { useState, useEffect, } from "react";
 import { useNavigate } from "react-router-dom"; 
 import axios from "axios"; 
 
+
 function Home() {
   const [email, setEmail] = useState(null); 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null); 
   const Navigate = useNavigate();
+
+  const API_URL = process.env.REACT_APP_API_URL
 
   const goToMainGame = () => {
     Navigate("/game"); // Redirect to the MainGame page
@@ -24,7 +27,7 @@ function Home() {
 
       try {
         // Send token to the backend to verify the user session
-        const response = await axios.post("http://localhost:5002/api/auth/getUser", { token });
+        const response = await axios.post(`${API_URL}/api/auth/getUser`, { token });
 
         if (response.data.user) {
           setEmail(response.data.user.email); // Set the email from the backend response

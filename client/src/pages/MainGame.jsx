@@ -19,11 +19,12 @@ export default function MainGame() {
   const [suggestions, setSuggestions] = useState([]); // Array that holds suggested players
   const [allNames, setAllNames] = useState([]);
   const [seconds, setSeconds] = useState(0); //Use state for timer
- 
+  const API_URL = process.env.REACT_APP_API_URL
+
 
   const initializeGame = async () => {
     try {
-      const playersResponse = await axios.get("http://localhost:5002/api/gameRoutes/getPlayers");
+      const playersResponse = await axios.get(`${API_URL}/api/gameRoutes/getPlayers`);
       setGroupedPlayers(playersResponse.data);
 
       const namesArray = [];
@@ -39,7 +40,7 @@ export default function MainGame() {
       namesArray.sort((a, b) => a.localeCompare(b));
       setAllNames(namesArray);
 
-      const gameResponse = await axios.get("http://localhost:5002/api/gameRoutes/startGame");
+      const gameResponse = await axios.get(`${API_URL}/api/gameRoutes/startGame`);
       setGameId(gameResponse.data.game);
       setGuess("");
       setGuessResult([]);
@@ -102,7 +103,7 @@ export default function MainGame() {
     }
     
     try {
-      const response = await axios.post("http://localhost:5002/api/gameRoutes/guess", {
+      const response = await axios.post(`${API_URL}/api/gameRoutes/guess`, {
         playerName: guess,
         gameId: gameId,
       });
