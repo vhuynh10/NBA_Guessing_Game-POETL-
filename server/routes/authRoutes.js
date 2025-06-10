@@ -1,12 +1,21 @@
 import express from 'express';
 import supabase from '../config/supabaseClient.js';
+import validatePassword from '../utils/validatePassword.js';
 
 const router = express.Router();
 
 // Sign up route
 router.post('/register', async (req, res) => {
     const { email, password } = req.body;
-    console.log('Received Email:', email); //Remove this in production
+
+    // Validate email and password
+    if (!email || !password) {
+        return res.status(400).json({ message: "Email and password are required" });
+    }
+    const passwordValidation = validatePassword(password);
+    if (!passwordValidation.isValid) {
+        return res.status(400).json({ message: "Invalid password", errors: passwordValidation.errors });
+    }
 
     try {
         // Register the user
@@ -56,7 +65,7 @@ router.post('/login', async (req, res) => {
             return res.status(401).json({ message: "Invalid email or password", error: error.message });
         }
 
-        res.json({ message: "Login successful", session: data.session });
+        res.json({ message: "Login successful", session: data.session }); //JWT token is in data.session.access_token
 
     } catch (err) {
         console.error(err.message);
