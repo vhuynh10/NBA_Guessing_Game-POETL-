@@ -19,7 +19,7 @@ export default function MainGame() {
   const [suggestions, setSuggestions] = useState([]); // Array that holds suggested players
   const [allNames, setAllNames] = useState([]);
   const [seconds, setSeconds] = useState(0); //Use state for timer
-  const API_URL = process.env.REACT_APP_API_URL
+  const API_URL = import.meta.env.VITE_API_URL;
 
 
   const initializeGame = async () => {
