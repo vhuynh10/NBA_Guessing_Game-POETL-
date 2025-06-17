@@ -41,7 +41,7 @@ export default function MainGame() {
       setAllNames(namesArray);
 
       const gameResponse = await axios.get(`${API_URL}/api/gameRoutes/startGame`);
-      setGameId(gameResponse.data.game);
+      setGameId(gameResponse.data.game_id);
       setGuess("");
       setGuessResult([]);
       setVictory(false);
