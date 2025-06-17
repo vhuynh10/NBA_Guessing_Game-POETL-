@@ -101,6 +101,11 @@ export default function MainGame() {
       alert("invalid guess")
       return;
     }
+
+    if (!gameId) {
+      alert("Game not initialized yet. Please wait...");
+      return;
+    }
     
     try {
       const response = await axios.post(`${API_URL}/api/gameRoutes/guess`, {
