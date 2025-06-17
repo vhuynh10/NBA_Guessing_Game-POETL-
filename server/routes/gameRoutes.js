@@ -115,6 +115,7 @@ router.get('/getPlayers', async (req, res) => {
 // Route to handle player guesses: returns the guessed players atttributes and whether or not it matched
 router.post('/guess', async (req, res) => {
     const { playerName, gameId } = req.body;
+    console.log('Received guess body:', req.body);
 
     if (!playerName || !gameId) {
         return handleError(res, 400, 'Missing playerName or gameId');
