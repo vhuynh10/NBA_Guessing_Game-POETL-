@@ -70,67 +70,67 @@ export function getFullTeamName(teamName) {
 export function getTeamLogo(teamName) {
     switch (teamName) {
         case "Atlanta":
-            return "/src/assets/nba-atlanta-hawks-logo-480x480.png";
+            return "/assets/nba-atlanta-hawks-logo-480x480.png";
         case "Boston":
-            return "/src/assets/nba-boston-celtics-logo-480x480.png";
+            return "/assets/nba-boston-celtics-logo-480x480.png";
         case "Brooklyn":
-            return "/src/assets/nba-brooklyn-nets-logo-480x480.png";
+            return "/assets/nba-brooklyn-nets-logo-480x480.png";
         case "Charlotte":
-            return "/src/assets/nba-charlotte-hornets-logo-480x480.png";
+            return "/assets/nba-charlotte-hornets-logo-480x480.png";
         case "Chicago":
-            return "/src/assets/nba-chicago-bulls-logo-480x480.png";
+            return "/assets/nba-chicago-bulls-logo-480x480.png";
         case "Cleveland":
-            return "/src/assets/nba-Clevelan-Cavaliers-logo-2022-480x480.png";
+            return "/assets/nba-Clevelan-Cavaliers-logo-2022-480x480.png";
         case "Dallas":
-            return "/src/assets/nba-dallas-mavericks-logo-480x480.png";
+            return "/assets/nba-dallas-mavericks-logo-480x480.png";
         case "Denver":
-            return "/src/assets/nba-denver-nuggets-logo-2018-480x480.png";
+            return "/assets/nba-denver-nuggets-logo-2018-480x480.png";
         case "Detroit":
-            return "/src/assets/nba-detroit-pistons-logo-480x480.png";
+            return "/assets/nba-detroit-pistons-logo-480x480.png";
         case "Golden State":
-            return "/src/assets/nba-golden-state-warriors-logo-2020-480x480.png";
+            return "/assets/nba-golden-state-warriors-logo-2020-480x480.png";
         case "Houston":
-            return "/src/assets/nba-houston-rockets-logo-2020-300x300.png";
+            return "/assets/nba-houston-rockets-logo-2020-300x300.png";
         case "Indiana":
-            return "/src/assets/nba-indiana-pacers-logo-480x480.png";
+            return "/assets/nba-indiana-pacers-logo-480x480.png";
         case "Los Angeles Clippers":
-            return "/src/assets/NBA-LA-Clippers-logo-2024-480x480.png";
+            return "/assets/NBA-LA-Clippers-logo-2024-480x480.png";
         case "Los Angeles Lakers":
-            return "/src/assets/nba-los-angeles-lakers-logo-480x480.png";
+            return "/assets/nba-los-angeles-lakers-logo-480x480.png";
         case "Memphis":
-            return "/src/assets/nba-memphis-grizzlies-logo-480x480.png";
+            return "/assets/nba-memphis-grizzlies-logo-480x480.png";
         case "Miami":
-            return "/src/assets/nba-miami-heat-logo-480x480.png";
+            return "/assets/nba-miami-heat-logo-480x480.png";
         case "Milwaukee":
-            return "/src/assets/nba-milwaukee-bucks-logo-480x480.png";
+            return "/assets/nba-milwaukee-bucks-logo-480x480.png";
         case "Minnesota":
-            return "/src/assets/nba-minnesota-timberwolves-logo-480x480.png";
+            return "/assets/nba-minnesota-timberwolves-logo-480x480.png";
         case "New Orleans":
-            return "/src/assets/nba-new-orleans-pelicans-logo-480x480.png";
+            return "/assets/nba-new-orleans-pelicans-logo-480x480.png";
         case "New York":
-            return "/src/assets/nba-new-york-knicks-logo-480x480.png";
+            return "/assets/nba-new-york-knicks-logo-480x480.png";
         case "Oklahoma City":
-            return "/src/assets/nba-oklahoma-city-thunder-logo-480x480.png";
+            return "/assets/nba-oklahoma-city-thunder-logo-480x480.png";
         case "Orlando":
-            return "/src/assets/nba-orlando-magic-logo-480x480.png";
+            return "/assets/nba-orlando-magic-logo-480x480.png";
         case "Philadelphia":
-            return "/src/assets/nba-philadelphia-76ers-logo-480x480.png";
+            return "/assets/nba-philadelphia-76ers-logo-480x480.png";
         case "Phoenix":
-            return "/src/assets/nba-phoenix-suns-logo-480x480.png";
+            return "/assets/nba-phoenix-suns-logo-480x480.png";
         case "Portland":
-            return "/src/assets/nba-portland-trail-blazers-logo-480x480.png";
+            return "/assets/nba-portland-trail-blazers-logo-480x480.png";
         case "Sacramento":
-            return "/src/assets/nba-sacramento-kings-logo-480x480.png";
+            return "/assets/nba-sacramento-kings-logo-480x480.png";
         case "San Antonio":
-            return "/src/assets/nba-san-antonio-spurs-logo-480x480.png";
+            return "/assets/nba-san-antonio-spurs-logo-480x480.png";
         case "Toronto":
-            return "/src/assets/nba-toronto-raptors-logo-2020-480x480.png";
+            return "/assets/nba-toronto-raptors-logo-2020-480x480.png";
         case "Utah":
-            return "/src/assets/nba-utah-jazz-logo-2022-480x480.png";
+            return "/assets/nba-utah-jazz-logo-2022-480x480.png";
         case "Washington":
-            return "/src/assets/nba-washington-wizards-logo-480x480.png";
+            return "/assets/nba-washington-wizards-logo-480x480.png";
         default:
-            return "/src/assets/react.svg"; // Fallback to React logo
+            return "/assets/react.svg"; // Fallback to React logo
     }
 }
 
