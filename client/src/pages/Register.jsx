@@ -6,7 +6,7 @@ const Register = () => {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState("");
 
-  const API_URL = process.env.REACT_APP_API_URL;
+  const API_URL = import.meta.env.VITE_API_URL;
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -14,8 +14,7 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Form Data:', formData);
-    console.log('API_URL:', API_URL); // Debug log to check if API_URL is set
+
 
     try {
       // Send POST request to backend using API_URL

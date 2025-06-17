@@ -6,6 +6,7 @@ const Login = () => {
   const [formData, setFormData] = useState({ username: "", password: "" });
   const [error, setError] = useState("");
   const navigate = useNavigate(); 
+  const API_URL = import.meta.env.VITE_API_URL;
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -16,7 +17,7 @@ const Login = () => {
 
     try {
       // Send POST request to your backend to handle login
-      const response = await axios.post("http://localhost:5002/api/auth/login", {
+      const response = await axios.post(`${API_URL}/api/auth/login`, {
         email: formData.username, // Treating username as email for Supabase authentication
         password: formData.password,
       });
